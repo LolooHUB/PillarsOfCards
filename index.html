@@ -45,19 +45,13 @@ body{
   to{opacity:1; transform:scale(1)}
 }
 
-h1{
+h1,h2{
   font-family:'Playfair Display',serif;
   color:var(--gold);
-  font-size:42px;
-  margin-bottom:12px;
 }
 
-h2{
-  font-family:'Playfair Display',serif;
-  font-size:48px;
-  color:var(--gold);
-  margin-bottom:10px;
-}
+h1{font-size:42px}
+h2{font-size:48px}
 
 .subtitle{
   font-size:14px;
@@ -94,6 +88,7 @@ h2{
   display:flex;
   justify-content:center;
   margin-bottom:25px;
+  min-height:150px;
 }
 
 .card{
@@ -117,6 +112,8 @@ h2{
 .value{font-size:22px;font-weight:600}
 .suit{font-size:26px;text-align:right}
 
+/* ---------- PILAS ---------- */
+
 #pilas{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -124,31 +121,30 @@ h2{
 }
 
 .pila{
+  position:relative;
   border:1px dashed rgba(201,162,77,.3);
   border-radius:18px;
   padding:12px;
-  min-height:160px;
-}
-
-.pila.activa{
-  animation:glow 1.2s infinite alternate;
-}
-
-@keyframes glow{
-  from{box-shadow:0 0 10px rgba(201,162,77,.3)}
-  to{box-shadow:0 0 30px rgba(201,162,77,.6)}
+  min-height:260px;
+  overflow:hidden;
 }
 
 .pila h3{
+  margin:4px 0 10px;
   font-family:'Playfair Display',serif;
   color:var(--gold);
+  text-align:center;
+}
+
+.pila .card{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
 }
 
 /* ---------- FINAL ---------- */
 
-#final{
-  display:none;
-}
+#final{display:none}
 
 .win{
   animation:winGlow 1.5s infinite alternate;
@@ -159,19 +155,17 @@ h2{
   to{text-shadow:0 0 30px rgba(201,162,77,.9)}
 }
 
-.lose{
-  color:#b44;
-}
+.lose{color:#b44}
 </style>
 </head>
 
 <body>
 
-<!-- SELECCIÓN DE MAZO -->
+<!-- MENU -->
 <div id="menu" class="screen">
   <h1>DOCE A UNO</h1>
   <p class="subtitle">Elegí tu mazo para comenzar</p>
-  <button class="btn" onclick="empezar('clasico')">MAZO CLÁSICO</button>
+  <button class="btn" onclick="empezar()">MAZO CLÁSICO</button>
 </div>
 
 <!-- JUEGO -->
@@ -197,6 +191,8 @@ const palos=[
 
 let mazo=[],pilas={},fin=false;
 
+/* ---------- MAZO ---------- */
+
 function crearMazo(){
   mazo=[];
   palos.forEach(p=>{
@@ -205,6 +201,8 @@ function crearMazo(){
   mazo.sort(()=>Math.random()-0.5);
 }
 
+/* ---------- CARTA ---------- */
+
 function cartaHTML(c){
   const d=document.createElement("div");
   d.className="card";
@@ -212,10 +210,14 @@ function cartaHTML(c){
   return d;
 }
 
+/* ---------- JUEGO AUTO ---------- */
+
 function mostrarCarta(){
   if(fin) return;
+
   const m=document.getElementById("mazo");
   m.innerHTML="";
+
   if(!mazo.length){
     perder();
     return;
@@ -223,42 +225,62 @@ function mostrarCarta(){
 
   const carta=mazo.pop();
   m.appendChild(cartaHTML(carta));
+
   setTimeout(()=>intentarColocar(carta),600);
 }
 
 function intentarColocar(carta){
-  for(const palo of palos){
-    const pila=pilas[palo.nombre];
-    const ult=pila[pila.length-1];
-    if((!ult&&carta.valor===12)||(ult&&ult.valor-1===carta.valor)){
-      pila.push(carta);
-      renderPilas();
-      if(pila.length===12){
-        ganar();
-        return;
-      }
-      setTimeout(mostrarCarta,400);
+  const pila = pilas[carta.palo.nombre];
+  const ultima = pila[pila.length - 1];
+
+  const valido =
+    (!ultima && carta.valor === 12) ||
+    (ultima && ultima.valor - 1 === carta.valor);
+
+  if(valido){
+    pila.push(carta);
+    renderPilas();
+
+    if(pila.length === 12){
+      ganar();
       return;
     }
   }
+
   setTimeout(mostrarCarta,400);
 }
+
+/* ---------- RENDER PILAS ---------- */
 
 function renderPilas(){
   const p=document.getElementById("pilas");
   p.innerHTML="";
+
   palos.forEach(pa=>{
     const d=document.createElement("div");
     d.className="pila";
     d.innerHTML=`<h3>${pa.icono} ${pa.nombre}</h3>`;
-    pilas[pa.nombre].forEach(c=>d.appendChild(cartaHTML(c)));
+
+    pilas[pa.nombre].forEach((c,i)=>{
+      const carta=cartaHTML(c);
+      carta.style.top=(40 + i*18)+"px";
+      if(i===pilas[pa.nombre].length-1){
+        carta.style.boxShadow="0 0 25px rgba(201,162,77,.5)";
+      }
+      d.appendChild(carta);
+    });
+
     p.appendChild(d);
   });
 }
 
+/* ---------- FLOW ---------- */
+
 function empezar(){
   document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
+
+  fin=false;
   pilas={};
   palos.forEach(p=>pilas[p.nombre]=[]);
   crearMazo();
