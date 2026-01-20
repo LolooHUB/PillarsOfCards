@@ -2,49 +2,106 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cartas – Carrera al 1</title>
+<title>Doce a Uno</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;600&display=swap');
+
 :root{
-  --bg:#0b0e1a;
-  --panel:rgba(255,255,255,.08);
-  --border:rgba(255,255,255,.18);
-  --txt:#eef1ff;
+  --bg:#000000;
+  --panel:#0d0d0d;
+  --gold:#c9a24d;
+  --border:rgba(201,162,77,.35);
+  --txt:#f4f4f4;
 }
 
 *{
   box-sizing:border-box;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
 }
 
 body{
   margin:0;
   min-height:100vh;
-  background:
-    radial-gradient(circle at top,#1a1f3d,var(--bg));
+  background:radial-gradient(circle at top,#111,#000);
   color:var(--txt);
+  font-family:'Inter',system-ui;
   display:flex;
-  flex-direction:column;
   align-items:center;
+  justify-content:center;
 }
 
-h1{
-  margin:18px 0 6px;
-  font-weight:600;
-  letter-spacing:.5px;
+/* ---------- PANTALLA INICIO ---------- */
+
+#inicio{
+  text-align:center;
+  max-width:420px;
+  padding:40px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:linear-gradient(145deg,#0b0b0b,#050505);
+  box-shadow:0 40px 80px rgba(0,0,0,.9);
 }
+
+#inicio h1{
+  font-family:'Playfair Display',serif;
+  font-size:42px;
+  margin:0 0 10px;
+  letter-spacing:1px;
+  color:var(--gold);
+}
+
+#inicio p{
+  font-size:14px;
+  opacity:.75;
+  line-height:1.6;
+}
+
+.btn{
+  margin-top:26px;
+  padding:14px 36px;
+  font-size:14px;
+  letter-spacing:2px;
+  background:transparent;
+  color:var(--gold);
+  border:1px solid var(--gold);
+  border-radius:999px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.btn:hover{
+  background:var(--gold);
+  color:#000;
+}
+
+/* ---------- JUEGO ---------- */
 
 #game{
+  display:none;
   width:100%;
   max-width:960px;
-  padding:20px;
+  padding:30px;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+header h2{
+  font-family:'Playfair Display',serif;
+  font-weight:500;
+  letter-spacing:1px;
+  color:var(--gold);
 }
 
 #mazo{
   display:flex;
   justify-content:center;
-  margin-bottom:25px;
+  margin-bottom:30px;
   min-height:150px;
 }
 
@@ -53,25 +110,24 @@ h1{
   height:135px;
   border-radius:16px;
   background:
-    linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.03));
+    linear-gradient(145deg,#1a1a1a,#070707);
   border:1px solid var(--border);
-  backdrop-filter:blur(12px);
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  padding:10px;
+  padding:12px;
   cursor:pointer;
-  transition:.25s ease;
+  transition:.25s;
 }
 
 .card:hover{
-  transform:translateY(-7px) scale(1.03);
-  box-shadow:0 20px 35px rgba(0,0,0,.45);
+  transform:translateY(-6px);
+  box-shadow:0 25px 45px rgba(0,0,0,.8);
 }
 
 .value{
   font-size:22px;
-  font-weight:700;
+  font-weight:600;
 }
 
 .suit{
@@ -82,13 +138,13 @@ h1{
 #pilas{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:18px;
+  gap:20px;
 }
 
 .pila{
-  border:2px dashed var(--border);
+  border:1px dashed var(--border);
   border-radius:18px;
-  padding:10px;
+  padding:12px;
   min-height:170px;
   display:flex;
   flex-direction:column;
@@ -97,20 +153,17 @@ h1{
 
 .pila h3{
   margin:6px 0 10px;
+  font-family:'Playfair Display',serif;
   font-weight:500;
-  opacity:.85;
+  color:var(--gold);
 }
 
-.pila .card{
-  margin-top:6px;
-  cursor:default;
-}
+/* ---------- VICTORIA ---------- */
 
 #overlay{
   position:fixed;
   inset:0;
-  background:rgba(5,7,15,.85);
-  backdrop-filter:blur(6px);
+  background:rgba(0,0,0,.9);
   display:none;
   align-items:center;
   justify-content:center;
@@ -118,37 +171,36 @@ h1{
 }
 
 #winBox{
-  background:linear-gradient(145deg,#1b2045,#0f132b);
-  border:1px solid var(--border);
+  background:#070707;
+  border:1px solid var(--gold);
   border-radius:22px;
-  padding:30px 40px;
+  padding:36px 44px;
   text-align:center;
-  box-shadow:0 30px 60px rgba(0,0,0,.6);
 }
 
 #winBox h2{
-  margin:0 0 10px;
-  font-size:28px;
+  font-family:'Playfair Display',serif;
+  font-size:30px;
+  margin:0;
+  color:var(--gold);
 }
-
-#winBox button{
-  margin-top:18px;
-  padding:10px 20px;
-  border:none;
-  border-radius:12px;
-  background:#4f6cff;
-  color:white;
-  font-size:15px;
-  cursor:pointer;
-}
-#winBox button:hover{opacity:.9}
 </style>
 </head>
 
 <body>
-<h1>Carrera de Cartas</h1>
+
+<div id="inicio">
+  <h1>DOCE A UNO</h1>
+  <p>Cuatro palos. Una carrera silenciosa.  
+  El primero que complete su secuencia gana.</p>
+  <button class="btn" onclick="empezar()">INICIO</button>
+</div>
 
 <div id="game">
+  <header>
+    <h2>Carrera de Cartas</h2>
+  </header>
+
   <div id="mazo"></div>
   <div id="pilas"></div>
 </div>
@@ -156,7 +208,7 @@ h1{
 <div id="overlay">
   <div id="winBox">
     <h2 id="winnerText"></h2>
-    <button onclick="reiniciar()">Reiniciar</button>
+    <button class="btn" onclick="reiniciar()">REINICIAR</button>
   </div>
 </div>
 
@@ -168,17 +220,12 @@ const palos=[
   {nombre:"Moneda",icono:"🪙"}
 ];
 
-let mazo=[];
-let cartaActual=null;
-let pilas={};
-let juegoTerminado=false;
+let mazo=[], cartaActual=null, pilas={}, juegoTerminado=false;
 
 function crearMazo(){
   mazo=[];
   palos.forEach(p=>{
-    for(let v=12;v>=1;v--){
-      mazo.push({valor:v,palo:p});
-    }
+    for(let v=12;v>=1;v--) mazo.push({valor:v,palo:p});
   });
   mazo.sort(()=>Math.random()-0.5);
 }
@@ -186,26 +233,14 @@ function crearMazo(){
 function cartaHTML(c){
   const d=document.createElement("div");
   d.className="card";
-  d.innerHTML=`
-    <div class="value">${c.valor}</div>
-    <div class="suit">${c.palo.icono}</div>`;
+  d.innerHTML=`<div class="value">${c.valor}</div><div class="suit">${c.palo.icono}</div>`;
   return d;
 }
 
 function mostrarCarta(){
   const m=document.getElementById("mazo");
   m.innerHTML="";
-
-  if(juegoTerminado){
-    m.innerHTML="<h3>Juego terminado</h3>";
-    return;
-  }
-
-  if(!mazo.length){
-    m.innerHTML="<p>Mazo vacío</p>";
-    return;
-  }
-
+  if(juegoTerminado || !mazo.length) return;
   cartaActual=mazo.pop();
   const c=cartaHTML(cartaActual);
   c.onclick=intentarColocar;
@@ -213,28 +248,14 @@ function mostrarCarta(){
 }
 
 function intentarColocar(){
-  if(juegoTerminado) return;
-
   const pila=pilas[cartaActual.palo.nombre];
-  const ultima=pila[pila.length-1];
-
-  const valido=
-    (!ultima && cartaActual.valor===12) ||
-    (ultima && ultima.valor-1===cartaActual.valor);
-
-  if(valido){
+  const u=pila[pila.length-1];
+  const ok=(!u && cartaActual.valor===12)||(u && u.valor-1===cartaActual.valor);
+  if(ok){
     pila.push(cartaActual);
     renderPilas();
-    verificarVictoria(cartaActual.palo.nombre);
+    if(pila.length===12) victoria(cartaActual.palo.nombre);
     mostrarCarta();
-  }
-}
-
-function verificarVictoria(palo){
-  if(pilas[palo].length===12){
-    juegoTerminado=true;
-    document.getElementById("winnerText").innerText=`🏆 Ganó ${palo}`;
-    document.getElementById("overlay").style.display="flex";
   }
 }
 
@@ -250,6 +271,18 @@ function renderPilas(){
   });
 }
 
+function victoria(palo){
+  juegoTerminado=true;
+  document.getElementById("winnerText").innerText=`🏆 Ganó ${palo}`;
+  document.getElementById("overlay").style.display="flex";
+}
+
+function empezar(){
+  document.getElementById("inicio").style.display="none";
+  document.getElementById("game").style.display="block";
+  iniciar();
+}
+
 function iniciar(){
   juegoTerminado=false;
   pilas={};
@@ -257,14 +290,13 @@ function iniciar(){
   crearMazo();
   renderPilas();
   mostrarCarta();
-  document.getElementById("overlay").style.display="none";
 }
 
 function reiniciar(){
+  document.getElementById("overlay").style.display="none";
   iniciar();
 }
-
-iniciar();
 </script>
+
 </body>
 </html>
