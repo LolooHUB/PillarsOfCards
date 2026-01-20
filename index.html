@@ -6,83 +6,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap');
 
 :root{
   --gold:#c9a24d;
-  --border:rgba(201,162,77,.35);
   --txt:#f4f4f4;
 }
 
-*{ box-sizing:border-box; }
+*{box-sizing:border-box}
 
 body{
   margin:0;
   min-height:100vh;
-  background:
-    radial-gradient(circle at top, #1b3a2b 0%, #07110c 45%, #000 100%);
+  background:radial-gradient(circle at top,#1b3a2b 0%,#07110c 45%,#000 100%);
   color:var(--txt);
   font-family:'Inter',system-ui;
   display:flex;
-  align-items:center;
   justify-content:center;
-  overflow:hidden;
+  align-items:center;
 }
 
-/* ---------- DECORACIÓN ---------- */
+/* ---------- PANTALLAS ---------- */
 
-.casino-deco{
-  position:fixed;
-  font-size:52px;
-  opacity:0.08;
-  pointer-events:none;
-}
-
-.top-left{ top:20px; left:20px; }
-.top-right{ top:20px; right:20px; }
-.bottom-left{ bottom:20px; left:20px; }
-.bottom-right{ bottom:20px; right:20px; }
-
-/* ---------- INICIO ---------- */
-
-#inicio{
+.screen{
+  background:#060606;
+  border:1px solid rgba(201,162,77,.4);
+  border-radius:24px;
+  padding:40px;
   text-align:center;
   max-width:420px;
-  padding:40px;
-  border:1px solid var(--border);
-  border-radius:22px;
-  background:linear-gradient(145deg,#0b0b0b,#050505);
+  width:90%;
   box-shadow:0 40px 80px rgba(0,0,0,.9);
-  animation:fadeIn .8s ease;
+  animation:fade .6s ease;
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:scale(.95);}
-  to{opacity:1; transform:scale(1);}
+@keyframes fade{
+  from{opacity:0; transform:scale(.9)}
+  to{opacity:1; transform:scale(1)}
 }
 
-#inicio h1{
+h1{
   font-family:'Playfair Display',serif;
-  font-size:42px;
-  margin:0 0 12px;
   color:var(--gold);
+  font-size:42px;
+  margin-bottom:12px;
 }
 
-#inicio p{
+h2{
+  font-family:'Playfair Display',serif;
+  font-size:48px;
+  color:var(--gold);
+  margin-bottom:10px;
+}
+
+.subtitle{
   font-size:14px;
-  opacity:.75;
-  line-height:1.6;
+  opacity:.7;
+  margin-bottom:30px;
 }
 
 .btn{
-  margin-top:26px;
-  padding:14px 36px;
-  font-size:14px;
-  letter-spacing:2px;
-  background:transparent;
-  color:var(--gold);
-  border:1px solid var(--gold);
+  padding:14px 34px;
   border-radius:999px;
+  background:transparent;
+  border:1px solid var(--gold);
+  color:var(--gold);
+  letter-spacing:2px;
   cursor:pointer;
   transition:.25s;
 }
@@ -96,58 +85,37 @@ body{
 
 #game{
   display:none;
+  max-width:900px;
   width:100%;
-  max-width:960px;
-  padding:30px;
-  animation:fadeIn .6s ease;
-}
-
-header{
-  text-align:center;
-  margin-bottom:24px;
-}
-
-header h2{
-  font-family:'Playfair Display',serif;
-  color:var(--gold);
+  padding:20px;
 }
 
 #mazo{
   display:flex;
   justify-content:center;
-  min-height:160px;
-  margin-bottom:30px;
+  margin-bottom:25px;
 }
 
 .card{
-  width:95px;
-  height:135px;
+  width:90px;
+  height:130px;
   border-radius:16px;
-  background:linear-gradient(145deg,#1c1c1c,#070707);
+  background:linear-gradient(145deg,#1a1a1a,#050505);
   border:1px solid rgba(201,162,77,.45);
+  padding:12px;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-  padding:12px;
-  cursor:pointer;
   animation:pop .35s ease;
-  transition:.25s;
 }
 
 @keyframes pop{
-  from{opacity:0; transform:scale(.8) rotate(-4deg);}
-  to{opacity:1; transform:scale(1) rotate(0);}
+  from{opacity:0; transform:scale(.7) rotate(-6deg)}
+  to{opacity:1; transform:scale(1) rotate(0)}
 }
 
-.card:hover{
-  transform:translateY(-8px) scale(1.05);
-  box-shadow:0 30px 50px rgba(0,0,0,.9);
-}
-
-.value{ font-size:22px; font-weight:600; }
-.suit{ font-size:28px; text-align:right; }
-
-/* ---------- PILAS ---------- */
+.value{font-size:22px;font-weight:600}
+.suit{font-size:26px;text-align:right}
 
 #pilas{
   display:grid;
@@ -156,14 +124,10 @@ header h2{
 }
 
 .pila{
-  border:1px dashed var(--border);
+  border:1px dashed rgba(201,162,77,.3);
   border-radius:18px;
   padding:12px;
-  min-height:170px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  transition:.3s;
+  min-height:160px;
 }
 
 .pila.activa{
@@ -171,83 +135,56 @@ header h2{
 }
 
 @keyframes glow{
-  from{ box-shadow:0 0 10px rgba(201,162,77,.3); }
-  to{ box-shadow:0 0 25px rgba(201,162,77,.6); }
+  from{box-shadow:0 0 10px rgba(201,162,77,.3)}
+  to{box-shadow:0 0 30px rgba(201,162,77,.6)}
 }
 
 .pila h3{
-  margin:6px 0 10px;
   font-family:'Playfair Display',serif;
   color:var(--gold);
 }
 
-/* ---------- VICTORIA ---------- */
+/* ---------- FINAL ---------- */
 
-#overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.92);
+#final{
   display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:10;
 }
 
-#winBox{
-  background:#070707;
-  border:1px solid var(--gold);
-  border-radius:22px;
-  padding:40px;
-  text-align:center;
-  animation:zoom .5s ease;
+.win{
+  animation:winGlow 1.5s infinite alternate;
 }
 
-@keyframes zoom{
-  from{transform:scale(.7); opacity:0;}
-  to{transform:scale(1); opacity:1;}
+@keyframes winGlow{
+  from{text-shadow:0 0 10px rgba(201,162,77,.4)}
+  to{text-shadow:0 0 30px rgba(201,162,77,.9)}
 }
 
-#winBox h2{
-  font-family:'Playfair Display',serif;
-  color:var(--gold);
-  font-size:30px;
-  margin-bottom:20px;
+.lose{
+  color:#b44;
 }
 </style>
 </head>
 
 <body>
 
-<div class="casino-deco top-left">🎲</div>
-<div class="casino-deco top-right">♠</div>
-<div class="casino-deco bottom-left">♦</div>
-<div class="casino-deco bottom-right">♣</div>
-
-<!-- SONIDOS -->
-<audio id="sndDraw" src="https://assets.mixkit.co/sfx/preview/mixkit-card-slide-1530.mp3"></audio>
-<audio id="sndPlace" src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3"></audio>
-<audio id="sndWin" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
-
-<!-- INICIO -->
-<div id="inicio">
+<!-- SELECCIÓN DE MAZO -->
+<div id="menu" class="screen">
   <h1>DOCE A UNO</h1>
-  <p>Del 12 al 1.<br>Una sola carrera.</p>
-  <button class="btn" onclick="empezar()">INICIO</button>
+  <p class="subtitle">Elegí tu mazo para comenzar</p>
+  <button class="btn" onclick="empezar('clasico')">MAZO CLÁSICO</button>
 </div>
 
 <!-- JUEGO -->
 <div id="game">
-  <header><h2>Carrera de Cartas</h2></header>
   <div id="mazo"></div>
   <div id="pilas"></div>
 </div>
 
-<!-- VICTORIA -->
-<div id="overlay">
-  <div id="winBox">
-    <h2 id="winnerText"></h2>
-    <button class="btn" onclick="reiniciar()">REINICIAR</button>
-  </div>
+<!-- FINAL -->
+<div id="final" class="screen">
+  <h2 id="finalTitle"></h2>
+  <p class="subtitle">Reclamá tu recompensa</p>
+  <button class="btn" onclick="location.reload()">JUGAR DE NUEVO</button>
 </div>
 
 <script>
@@ -258,11 +195,7 @@ const palos=[
   {nombre:"Moneda",icono:"🪙"}
 ];
 
-let mazo=[],cartaActual=null,pilas={},fin=false;
-
-const sndDraw=document.getElementById("sndDraw");
-const sndPlace=document.getElementById("sndPlace");
-const sndWin=document.getElementById("sndWin");
+let mazo=[],pilas={},fin=false;
 
 function crearMazo(){
   mazo=[];
@@ -280,37 +213,35 @@ function cartaHTML(c){
 }
 
 function mostrarCarta(){
+  if(fin) return;
   const m=document.getElementById("mazo");
   m.innerHTML="";
-  if(fin||!mazo.length) return;
-  cartaActual=mazo.pop();
-  sndDraw.currentTime=0; sndDraw.play();
-  const c=cartaHTML(cartaActual);
-  c.onclick=intentarColocar;
-  m.appendChild(c);
-}
-
-function intentarColocar(){
-  const pila=pilas[cartaActual.palo.nombre];
-  const ult=pila[pila.length-1];
-  const ok=(!ult&&cartaActual.valor===12)||(ult&&ult.valor-1===cartaActual.valor);
-  if(!ok) return;
-
-  sndPlace.currentTime=0; sndPlace.play();
-  pila.push(cartaActual);
-  renderPilas();
-
-  document.querySelectorAll(".pila").forEach(p=>p.classList.remove("activa"));
-  document.querySelectorAll(".pila")[palos.findIndex(p=>p.nombre===cartaActual.palo.nombre)].classList.add("activa");
-
-  if(pila.length===12){
-    sndWin.play();
-    document.getElementById("winnerText").innerText="🏆 Ganó "+cartaActual.palo.nombre;
-    document.getElementById("overlay").style.display="flex";
-    fin=true;
+  if(!mazo.length){
+    perder();
     return;
   }
-  mostrarCarta();
+
+  const carta=mazo.pop();
+  m.appendChild(cartaHTML(carta));
+  setTimeout(()=>intentarColocar(carta),600);
+}
+
+function intentarColocar(carta){
+  for(const palo of palos){
+    const pila=pilas[palo.nombre];
+    const ult=pila[pila.length-1];
+    if((!ult&&carta.valor===12)||(ult&&ult.valor-1===carta.valor)){
+      pila.push(carta);
+      renderPilas();
+      if(pila.length===12){
+        ganar();
+        return;
+      }
+      setTimeout(mostrarCarta,400);
+      return;
+    }
+  }
+  setTimeout(mostrarCarta,400);
 }
 
 function renderPilas(){
@@ -326,13 +257,8 @@ function renderPilas(){
 }
 
 function empezar(){
-  document.getElementById("inicio").style.display="none";
+  document.getElementById("menu").style.display="none";
   document.getElementById("game").style.display="block";
-  iniciar();
-}
-
-function iniciar(){
-  fin=false;
   pilas={};
   palos.forEach(p=>pilas[p.nombre]=[]);
   crearMazo();
@@ -340,9 +266,20 @@ function iniciar(){
   mostrarCarta();
 }
 
-function reiniciar(){
-  document.getElementById("overlay").style.display="none";
-  iniciar();
+function ganar(){
+  fin=true;
+  document.getElementById("game").style.display="none";
+  document.getElementById("final").style.display="block";
+  document.getElementById("finalTitle").innerText="GANASTE";
+  document.getElementById("finalTitle").className="win";
+}
+
+function perder(){
+  fin=true;
+  document.getElementById("game").style.display="none";
+  document.getElementById("final").style.display="block";
+  document.getElementById("finalTitle").innerText="PERDISTE";
+  document.getElementById("finalTitle").className="lose";
 }
 </script>
 
