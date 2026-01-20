@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cartas – Carrera al 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#0b0e1a;
+  --panel:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.18);
+  --txt:#eef1ff;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top,#1a1f3d,var(--bg));
+  color:var(--txt);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+h1{
+  margin:18px 0 6px;
+  font-weight:600;
+  letter-spacing:.5px;
+}
+
+#game{
+  width:100%;
+  max-width:960px;
+  padding:20px;
+}
+
+#mazo{
+  display:flex;
+  justify-content:center;
+  margin-bottom:25px;
+  min-height:150px;
+}
+
+.card{
+  width:95px;
+  height:135px;
+  border-radius:16px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.03));
+  border:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:10px;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.card:hover{
+  transform:translateY(-7px) scale(1.03);
+  box-shadow:0 20px 35px rgba(0,0,0,.45);
+}
+
+.value{
+  font-size:22px;
+  font-weight:700;
+}
+
+.suit{
+  font-size:28px;
+  text-align:right;
+}
+
+#pilas{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+
+.pila{
+  border:2px dashed var(--border);
+  border-radius:18px;
+  padding:10px;
+  min-height:170px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.pila h3{
+  margin:6px 0 10px;
+  font-weight:500;
+  opacity:.85;
+}
+
+.pila .card{
+  margin-top:6px;
+  cursor:default;
+}
+
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(5,7,15,.85);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+#winBox{
+  background:linear-gradient(145deg,#1b2045,#0f132b);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:30px 40px;
+  text-align:center;
+  box-shadow:0 30px 60px rgba(0,0,0,.6);
+}
+
+#winBox h2{
+  margin:0 0 10px;
+  font-size:28px;
+}
+
+#winBox button{
+  margin-top:18px;
+  padding:10px 20px;
+  border:none;
+  border-radius:12px;
+  background:#4f6cff;
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+}
+#winBox button:hover{opacity:.9}
+</style>
+</head>
+
+<body>
+<h1>Carrera de Cartas</h1>
+
+<div id="game">
+  <div id="mazo"></div>
+  <div id="pilas"></div>
+</div>
+
+<div id="overlay">
+  <div id="winBox">
+    <h2 id="winnerText"></h2>
+    <button onclick="reiniciar()">Reiniciar</button>
+  </div>
+</div>
+
+<script>
+const palos=[
+  {nombre:"Espada",icono:"⚔️"},
+  {nombre:"Basto",icono:"🌿"},
+  {nombre:"Copa",icono:"🍷"},
+  {nombre:"Moneda",icono:"🪙"}
+];
+
+let mazo=[];
+let cartaActual=null;
+let pilas={};
+let juegoTerminado=false;
+
+function crearMazo(){
+  mazo=[];
+  palos.forEach(p=>{
+    for(let v=12;v>=1;v--){
+      mazo.push({valor:v,palo:p});
+    }
+  });
+  mazo.sort(()=>Math.random()-0.5);
+}
+
+function cartaHTML(c){
+  const d=document.createElement("div");
+  d.className="card";
+  d.innerHTML=`
+    <div class="value">${c.valor}</div>
+    <div class="suit">${c.palo.icono}</div>`;
+  return d;
+}
+
+function mostrarCarta(){
+  const m=document.getElementById("mazo");
+  m.innerHTML="";
+
+  if(juegoTerminado){
+    m.innerHTML="<h3>Juego terminado</h3>";
+    return;
+  }
+
+  if(!mazo.length){
+    m.innerHTML="<p>Mazo vacío</p>";
+    return;
+  }
+
+  cartaActual=mazo.pop();
+  const c=cartaHTML(cartaActual);
+  c.onclick=intentarColocar;
+  m.appendChild(c);
+}
+
+function intentarColocar(){
+  if(juegoTerminado) return;
+
+  const pila=pilas[cartaActual.palo.nombre];
+  const ultima=pila[pila.length-1];
+
+  const valido=
+    (!ultima && cartaActual.valor===12) ||
+    (ultima && ultima.valor-1===cartaActual.valor);
+
+  if(valido){
+    pila.push(cartaActual);
+    renderPilas();
+    verificarVictoria(cartaActual.palo.nombre);
+    mostrarCarta();
+  }
+}
+
+function verificarVictoria(palo){
+  if(pilas[palo].length===12){
+    juegoTerminado=true;
+    document.getElementById("winnerText").innerText=`🏆 Ganó ${palo}`;
+    document.getElementById("overlay").style.display="flex";
+  }
+}
+
+function renderPilas(){
+  const p=document.getElementById("pilas");
+  p.innerHTML="";
+  palos.forEach(pa=>{
+    const d=document.createElement("div");
+    d.className="pila";
+    d.innerHTML=`<h3>${pa.icono} ${pa.nombre}</h3>`;
+    pilas[pa.nombre].forEach(c=>d.appendChild(cartaHTML(c)));
+    p.appendChild(d);
+  });
+}
+
+function iniciar(){
+  juegoTerminado=false;
+  pilas={};
+  palos.forEach(p=>pilas[p.nombre]=[]);
+  crearMazo();
+  renderPilas();
+  mostrarCarta();
+  document.getElementById("overlay").style.display="none";
+}
+
+function reiniciar(){
+  iniciar();
+}
+
+iniciar();
+</script>
+</body>
+</html>
