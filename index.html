@@ -4,20 +4,27 @@
 <meta charset="UTF-8">
 <title>Alta Carta</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #1a1a1a, #000);
+  background: #000;
   color: #f5e6b3;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Cinzel', serif;
   height: 100vh;
-  overflow: hidden;
 }
 
-/* ---------- MENU ---------- */
-#menu {
+button {
+  background: gold;
+  border: none;
+  padding: 14px 24px;
+  margin: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#menu, #final {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -25,120 +32,39 @@ body {
   align-items: center;
 }
 
-#menu h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 56px;
-  letter-spacing: 4px;
-}
-
-#menu p {
-  opacity: .8;
-  margin-bottom: 25px;
-}
-
-button {
-  background: linear-gradient(145deg, #b08d57, #e6c98f);
-  border: none;
-  padding: 14px 28px;
-  margin: 6px;
-  font-size: 18px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-family: 'Cinzel', serif;
-  transition: transform .2s, box-shadow .2s;
-}
-
-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(255,215,120,.4);
-}
-
-/* ---------- JUEGO ---------- */
 #game {
   display: none;
-  height: 100vh;
-  padding: 30px;
+  padding: 20px;
+}
+
+#status {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 20px;
 }
 
 #mesa {
   display: flex;
   justify-content: space-around;
-  align-items: flex-end;
-  height: 75%;
 }
 
 .pila {
-  width: 120px;
-  position: relative;
-}
-
-/* Carta en mesa */
-#carta-actual {
-  position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* Cartas */
-.carta {
-  width: 120px;
-  height: 170px;
-  border-radius: 12px;
-  background: linear-gradient(160deg, #222, #000);
   border: 2px solid gold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Cinzel', serif;
-  font-size: 20px;
-  box-shadow: 0 15px 30px rgba(0,0,0,.7);
-  animation: aparecer .3s ease;
+  padding: 10px;
+  width: 120px;
+  text-align: center;
 }
 
-.apilada {
-  position: absolute;
-  left: 0;
-}
-
-@keyframes aparecer {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ---------- FINAL ---------- */
-#final {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-#final h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 64px;
-  animation: brillo 1.5s infinite alternate;
-}
-
-#final p {
-  font-size: 22px;
-  opacity: .85;
-}
-
-@keyframes brillo {
-  from { text-shadow: 0 0 10px gold; }
-  to { text-shadow: 0 0 35px gold; }
+.carta {
+  margin-top: 6px;
+  padding: 6px;
+  border-top: 1px solid gold;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
 <div id="menu">
   <h1>ALTA CARTA</h1>
   <p>Elegí tu equipo</p>
@@ -148,14 +74,12 @@ button:hover {
   <button onclick="iniciar('Moneda')">Moneda</button>
 </div>
 
-<!-- JUEGO -->
 <div id="game">
-  <div id="carta-actual"></div>
+  <div id="status"></div>
   <div id="mesa"></div>
 </div>
 
-<!-- FINAL -->
-<div id="final">
+<div id="final" style="display:none;">
   <h1 id="resultado"></h1>
   <p>Reclamá tu recompensa</p>
 </div>
@@ -165,7 +89,7 @@ const PALOS = ["Espada","Basto","Copa","Moneda"];
 let mazo = [];
 let pilas = {};
 let equipo = "";
-let jugando = false;
+let intervalo;
 
 function iniciar(palo) {
   equipo = palo;
@@ -173,8 +97,7 @@ function iniciar(palo) {
   document.getElementById("game").style.display = "block";
   crearMesa();
   crearMazo();
-  jugando = true;
-  setTimeout(turnoAuto, 800);
+  intervalo = setInterval(turno, 600);
 }
 
 function crearMesa() {
@@ -183,10 +106,12 @@ function crearMesa() {
   pilas = {};
 
   PALOS.forEach(p => {
+    pilas[p] = 12;
     const div = document.createElement("div");
     div.className = "pila";
+    div.id = p;
+    div.innerHTML = `<strong>${p}</strong>`;
     mesa.appendChild(div);
-    pilas[p] = { valor: 12, div };
   });
 }
 
@@ -200,55 +125,39 @@ function crearMazo() {
   mazo.sort(() => Math.random() - 0.5);
 }
 
-function turnoAuto() {
-  if (!jugando) return;
+function turno() {
   if (mazo.length === 0) return perder();
 
   const carta = mazo.shift();
-  mostrarCartaActual(carta);
+  document.getElementById("status").textContent =
+    `Sale: ${carta.valor} de ${carta.palo}`;
 
-  const pila = pilas[carta.palo];
+  if (pilas[carta.palo] === carta.valor) {
+    pilas[carta.palo]--;
+    const div = document.getElementById(carta.palo);
+    const c = document.createElement("div");
+    c.className = "carta";
+    c.textContent = carta.valor;
+    div.appendChild(c);
 
-  if (carta.valor === pila.valor) {
-    colocarCarta(carta, pila);
-    pila.valor--;
-
-    if (carta.palo === equipo && pila.valor === 0) {
-      return ganar();
+    if (carta.palo === equipo && pilas[carta.palo] === 0) {
+      ganar();
     }
   }
-
-  setTimeout(turnoAuto, 500);
-}
-
-function mostrarCartaActual(carta) {
-  const zona = document.getElementById("carta-actual");
-  zona.innerHTML = "";
-  const c = document.createElement("div");
-  c.className = "carta";
-  c.textContent = carta.valor + " " + carta.palo;
-  zona.appendChild(c);
-}
-
-function colocarCarta(carta, pila) {
-  const c = document.createElement("div");
-  c.className = "carta apilada";
-  c.textContent = carta.valor + " " + carta.palo;
-  c.style.top = `${(12 - carta.valor) * 18}px`;
-  pila.div.appendChild(c);
 }
 
 function ganar() {
-  jugando = false;
+  clearInterval(intervalo);
   mostrarFinal("GANASTE");
 }
 
 function perder() {
-  jugando = false;
+  clearInterval(intervalo);
   mostrarFinal("PERDISTE");
 }
 
 function mostrarFinal(txt) {
+  document.getElementById("game").style.display = "none";
   document.getElementById("resultado").textContent = txt;
   document.getElementById("final").style.display = "flex";
 }
