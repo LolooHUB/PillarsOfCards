@@ -34,7 +34,7 @@ body{
   border-radius:24px;
   padding:40px;
   text-align:center;
-  max-width:420px;
+  max-width:460px;
   width:90%;
   box-shadow:0 40px 80px rgba(0,0,0,.9);
   animation:fade .6s ease;
@@ -68,6 +68,7 @@ h2{font-size:48px}
   letter-spacing:2px;
   cursor:pointer;
   transition:.25s;
+  margin:8px;
 }
 .btn:hover{
   background:var(--gold);
@@ -161,11 +162,18 @@ h2{font-size:48px}
 
 <body>
 
-<!-- MENU -->
+<!-- MENU MAZO -->
 <div id="menu" class="screen">
   <h1>DOCE A UNO</h1>
   <p class="subtitle">Elegí tu mazo para comenzar</p>
-  <button class="btn" onclick="empezar()">MAZO CLÁSICO</button>
+
+  <button class="btn" onclick="seleccionarMazo('clasico')">
+    🎴 MAZO CLÁSICO
+  </button>
+
+  <button class="btn" onclick="seleccionarMazo('cargado')">
+    🎰 MAZO CARGADO
+  </button>
 </div>
 
 <!-- JUEGO -->
@@ -177,7 +185,7 @@ h2{font-size:48px}
 <!-- FINAL -->
 <div id="final" class="screen">
   <h2 id="finalTitle"></h2>
-  <p class="subtitle">Gracias por jugar!.</p>
+  <p class="subtitle">Reclamá tu recompensa</p>
   <button class="btn" onclick="location.reload()">JUGAR DE NUEVO</button>
 </div>
 
@@ -190,6 +198,14 @@ const palos=[
 ];
 
 let mazo=[],pilas={},fin=false;
+let tipoMazo="clasico";
+
+/* ---------- SELECCIÓN ---------- */
+
+function seleccionarMazo(tipo){
+  tipoMazo = tipo;
+  empezar();
+}
 
 /* ---------- MAZO ---------- */
 
@@ -198,7 +214,15 @@ function crearMazo(){
   palos.forEach(p=>{
     for(let v=12;v>=1;v--) mazo.push({valor:v,palo:p});
   });
-  mazo.sort(()=>Math.random()-0.5);
+
+  if(tipoMazo === "clasico"){
+    mazo.sort(()=>Math.random()-0.5);
+  }
+
+  if(tipoMazo === "cargado"){
+    // favorece cartas altas
+    mazo.sort((a,b)=>b.valor - a.valor + (Math.random()-0.5));
+  }
 }
 
 /* ---------- CARTA ---------- */
@@ -250,7 +274,7 @@ function intentarColocar(carta){
   setTimeout(mostrarCarta,400);
 }
 
-/* ---------- RENDER PILAS ---------- */
+/* ---------- RENDER ---------- */
 
 function renderPilas(){
   const p=document.getElementById("pilas");
